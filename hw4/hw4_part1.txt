@@ -1,0 +1,149 @@
+// returns a number, takes a list of lists which represents a set of keys and weights
+procedure min-cost-naive(list)
+initialize return value to infinity
+if the list is empty, return 0
+If the list has only one member, return its weight // a single leaf
+otherwise, for each key k on the list
+split the list around k to ((left) k (right))
+// left and right are the lists of keys on the left and right subtrees, resp.
+compute (sum of weights + min-cost-naive(left) + min-cost-naive(right))
+return the minimum of those computed values
+
+; Original Code
+(define (make-account balance)
+  (define (withdraw amount)
+    ( if (>= balance amount)
+         (begin (set! balance (- balance amount))
+                balance)
+         "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch m)
+    (cond ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else ((print "Unknown request -- MAKE-ACCOUNT"
+                       m)))))
+  dispatch)
+
+; QUESTION 1A
+(define make-account-lambda
+  (lambda (balance)
+    (define withdraw
+      (lambda (amount)
+        (if (>= balance amount)
+            (begin (set! balance (- balance amount))
+                   balance)
+            "Insufficient funds")))
+    (define deposit
+      (lambda (amount)
+        (set! balance (+ balance amount))
+        balance))
+  (lambda (m)
+    (cond ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else ((print "Unknown request -- MAKE-ACCOUNT"
+                        m)))))))
+
+; QUESTION 1B
+(define make-account-inline
+  (lambda (balance)
+    (lambda (m)
+      (cond ((eq? m 'withdraw)
+             (lambda (amount)
+               (if (>= balance amount)
+                   (begin (set! balance (- balance amount))
+                          balance)
+                   "Insufficient funds")))
+            ((eq? m 'deposit)
+             (lambda (amount)
+               (set! balance (+ balance amount))
+               balance))
+            (else ((print "Unknown request -- MAKE-ACCOUNT"
+                          m)))))))
+
+; QUESTION 1C
+(define make-account-inline-factored
+  (lambda (balance)
+    (lambda (m)
+      (lambda (amount)
+        (cond ((eq? m 'withdraw)
+               (if (>= balance amount)
+                   (begin (set! balance (- balance amount))
+                          balance)
+                   "Insufficient funds"))
+              ((eq? m 'deposit)
+               (set! balance (+ balance amount))
+               balance)
+              (else ((print "Unknown request -- MAKE-ACCOUNT"
+                            m))))))))
+
+
+; Original Code
+(define (make-account balance)
+  (define (withdraw amount)
+    ( if (>= balance amount)
+         (begin (set! balance (- balance amount))
+                balance)
+         "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch m)
+    (cond ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else ((print "Unknown request -- MAKE-ACCOUNT"
+                       m)))))
+  dispatch)
+
+; QUESTION 1A
+(define make-account-lambda
+  (lambda (x)
+    (define withdraw
+      (lambda (y)
+        (if (>= x y)
+            (begin (set! x (- x y))
+                   x)
+            "Insufficient funds")))
+    (define deposit
+      (lambda (y)
+        (set! x (+ x y))
+        x))
+  (lambda (z)
+    (cond ((eq? z 'withdraw) withdraw)
+          ((eq? z 'deposit) deposit)
+          (else ((print "Unknown request -- MAKE-ACCOUNT"
+                        z)))))))
+
+; QUESTION 1B
+(define make-account-inline
+  (lambda (x)
+    (lambda (z)
+      (cond ((eq? z 'withdraw)
+             (lambda (y)
+               (if (>= x y)
+                   (begin (set! x (- x y))
+                          x)
+                   "Insufficient funds")))
+            ((eq? z 'deposit)
+             (lambda (y)
+               (set! x (+ x y))
+               x))
+            (else ((print "Unknown request -- MAKE-ACCOUNT"
+                          z)))))))
+
+; QUESTION 1C
+(define make-account-inline-factored
+  (lambda (x)
+    (lambda (z)
+      (lambda (y)
+        (cond ((eq? z 'withdraw)
+               (if (>= x y)
+                   (begin (set! x (- x y))
+                          x)
+                   "Insufficient funds"))
+              ((eq? z 'deposit)
+               (set! x (+ x y))
+               x)
+              (else ((print "Unknown request -- MAKE-ACCOUNT"
+                            z))))))))

@@ -1,0 +1,106 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages and stuff
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2.5cm, right = 2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{listings}
+ 
+\setlength{\parindent}{0in}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+% UPDATE FOR ASSIGNMENTS %
+\lhead{\footnotesize Homework 1}
+\rhead{\footnotesize Vu}
+\cfoot{\footnotesize \thepage}
+
+
+\begin{document}
+	\thispagestyle{empty}
+	
+	\begin{tabular}{p{15.5cm}}
+		{\large \bf Structure of Higher Level Languages} \\ CS450 \\
+		University of Massachusetts Boston \\ Fall 2020  \\ N. Haspel\\
+		\hline
+		\\
+	\end{tabular}
+
+	\vspace*{0.1cm}
+	
+	\begin{center}
+		% UPDATE FOR ASSIGNMENTS %
+		{\Large \bf Homework 1}
+		\vspace{1mm}
+		
+		{\bf September 23, 2020}
+		\vspace{1mm}
+		
+		{\bf Luke Vu}	
+	\end{center} 
+
+	\vspace*{0.5cm}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%% Document can be filled in from here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{enumerate}
+	\item
+	\begin{enumerate}
+		\item \lstinputlisting{1.1.txt}
+		\item List uses applicative-order evaluation, where the interpreter evaluates the arguments, then applies. \texttt{if} uses a special form, a restricted type of conditional where there are precisely two cases. If the predicate evaluates to true, then the consequent is evaluated and returned. Otherwise, the alternative is returned. In Alyssa's code using the new-if, the line \texttt{(sqrt-iter (improve guess x) x)} is executed without the conditional \texttt{good-enough?} telling it to or not.
+		\item {\bf Problem A}
+		\begin{enumerate}
+			\item A procedure definition is expressed here as a compound procedure. The form of a procedure definition is (define (name formal parameters) body). Here f is the name and symbol to be associated with the procedure definition. The first x is part of the formal parameters and correspond to arguments in the body, which is an expression that will yield the value of the procedure.
+			
+			\item \texttt{(f (+ 3 5))}
+			\begin{enumerate}
+				\item \lstinputlisting{1c2a.txt}
+				
+				\item \lstinputlisting{1c2b.txt}
+			\end{enumerate}
+			
+		\end{enumerate}
+		
+		\item The first function (def (p) (p)) does not return any value. It's a function that calls on itself, infinitely. The second function returns 0 if the x argument is 0, else it returns whatever the y argument is. Running the (test 0 (p)) function causes an infinite loop on an applicative-order interpreter. The interpreter evaluates first 0, then attempt to evaluate (p). Again, because (p) evaluates to itself, infinitely loops trying to evaluate itself. A normal-order evaluation will fully expand the function then reduce it. (test 0 (p)) is expanded to (if (= 0 0) 0 (p))
+		Special form 'if' will only evaluate the second expression (p) if the first expression (= 0 0) turns out to be false. Here in this function, (= 0 0) evaluates to true and thus 0 is returned. (p) is never evaluated.
+		
+		
+	\end{enumerate}
+	
+	\newpage
+	\item \lstinputlisting{2.txt} 
+	
+	Any element in Pascal's triangle can be evaluated by the sum of two elements above it. Looking at these two values from a row and column perspective, any element is the sum of value of the element in the row above, same column, with the element of the row above, column to the left. Base cases when the element is in column 0 or when row and column are equal always evaluate to 1.
+	
+	\item 1.17
+	
+	\item Normal-Order \\
+	\lstinputlisting{test.txt}
+	\newpage
+	Applicative-Order \\
+	\lstinputlisting{4.txt}
+	
+	\item Short Essay Section
+	
+	\begin{enumerate}
+		\item Before Scheme, I've programmed mostly in Java, Python, and C. I've done a a little bit of MIPS assembly in a hardware organization and design class I've taken before. The way the operator is on the left and how it operates on the arguments to the right in scheme reminded me of adding and subtracting from the registers in MIPS. Scheme is a new experience so how it responds is all new to me.
+		\item I get a message of procedure with a plus sign. The message indicates a procedure expression for + and requires operands to operate on.
+		\item I got a very late start on this assignment and have not been able to experiment much with Scheme. I like that it really forces me to think of how functions are built from a low level. It is taking some getting used to the parentheses notation to properly wrap all the code that is written, starting with the Pascal's triangle problem.
+	\end{enumerate}
+
+\end{enumerate}
+
+%\lstinputlisting{test.txt}
+
+%\newpage
+%\lstinputlisting[language=Python]{source_filename.py}
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+	
+\end{document}
+

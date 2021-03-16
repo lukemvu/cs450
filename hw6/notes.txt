@@ -1,0 +1,360 @@
+1. Initial test runs I can evaluate symbols like numbers and define variables. I can define variables to other variables. I noticed that primitive procedures aren't available, e.g. +, however, I can create pairs and lists.
+
+(define (setup-environment)
+  (let ((initial-env
+         (xtend-environment prim-names
+                            prim-proc
+                            the-empty-environment)))
+    initial-env))
+
+    (define prim-names '())
+    (define prim-proc '())
+
+    does not woork
+
+    > (car the-global-environment)
+    ((car cdr cons null?)
+     (primitive #<procedure:mcar>)
+     (primitive #<procedure:mcdr>)
+     (primitive #<procedure:mcons>)
+     (primitive #<procedure:null?>))
+
+check for pair
+
+s450==> if
+. . mcdr: contract violation
+  expected: mpair?
+  given: if
+>
+
+
+s450==> if
+Special form: if
+#<void>
+
+s450==> cond
+Special form: cond
+#<void>
+
+; if not #f, then spec form found
+(if (not (false? action))
+    (cond ((pair? exp)
+           (action exp env))
+          (else (display "Special form: ")
+
+                (newline)))
+    ;else
+
+
+
+
+q6
+
+; SPECIAL FORM 'defined?' returns #t iff <symbol> is defined in current environment
+(define (defined? var env)
+  (define (env-loop env)
+    (define (scan vars)
+      (cond ((null? vars)
+             (env-loop (enclosing-environment env)))
+            ((eq? var (car vars)) #t)
+            (else (scan (cdr vars)))))
+    (if (eq? env the-empty-environment)
+        #f
+        (let ((frame (first-frame env)))
+          (scan (frame-variables frame)))))
+  (env-loop env))
+
+;(define (defined? var env)
+;  (define (scan vars)
+;    (cond ((null? vars) #f)
+;          ((equal? var (car vars)) #t)
+;          (else (scan (cdr vars)))))
+;  (let ((frame (first-frame env)))
+;          (scan (frame-variables frame))))
+
+;(define (defined? var env)
+;  (define (scan vars vals)
+;    (cond ((null? vars) #f)
+;          ((equal? var (car vars)) #t)
+;          (else (scan (cdr vars) (cdr vals)))))
+;  (let ((frame (first-frame env)))
+;          (scan (frame-variables frame)
+;                (frame-values frame))))
+
+
+> the-global-environment
+(((y x display / - + null? cons cdr car)
+  10
+  10
+  (primitive #<procedure:mdisplay>)
+  (primitive #<procedure:/>)
+  (primitive #<procedure:->)
+  (primitive #<procedure:+>)
+  (primitive #<procedure:null?>)
+  (primitive #<procedure:mcons>)
+  (primitive #<procedure:mcdr>)
+  (primitive #<procedure:mcar>)))
+
+
+  s450==> (define x 10)
+x
+
+s450==> (defined? x)
+var is: x
+vars is: x
+vars is: display
+vars is: /
+vars is: -
+vars is: +
+vars is: null?
+vars is: cons
+vars is: cdr
+vars is: car
+vars is: . . mcar: contract violation
+  expected: mpair?
+  given: ()
+>
+
+
+might have found out, passing entire expression instead of the var i actualyl wanted
+
+; SPECIAL FORM 'defined?' returns #t iff <symbol> is defined in current environment
+(define (defined? var env)
+  (define (env-loop env)
+    (display "var is: ")
+    (display (cadr var))
+    (newline)
+    (define (scan vars)
+      (display "vars is: ")
+      (display (car vars))
+      (newline)
+      (cond ((null? vars)
+             (env-loop (enclosing-environment env)))
+            ((equal? var (car vars)) #t)
+            (else (scan (cdr vars)))))
+    (if (eq? env the-empty-environment)
+        #f
+        (let ((frame (first-frame env)))
+          (scan (frame-variables frame)))))
+  (env-loop env))
+
+
+  symbol check fixed my issues
+
+
+
+  > (lookup? car (caar the-global-environment))
+#<procedure:mcar> display
+#<procedure:mcar> /
+#<procedure:mcar> -
+#<procedure:mcar> +
+#<procedure:mcar> null?
+#<procedure:mcar> cons
+#<procedure:mcar> cdr
+#<procedure:mcar> car
+#f
+>
+
+trying to find a way to prevent installing special form with a name thats been defined, comparing with a custom looop up function
+
+;lookup?
+(define (lookup? key list)
+  (cond ((null? list) #f)
+        ((eq? key (car list)) #t)
+        (else
+         (display key)
+         (display " ")
+         (display (car list))
+         (newline)
+         (lookup? key (cdr list)))))
+
+
+
+pasta code, fixed the issue this way, some modifications
+
+(define (install-special-form key value)
+  (if (defined2? key the-global-environment)
+      ;lookup? key (caar the-global-environment)
+      (display "Can't give a defined name to a new special form")
+      (cond ((not (lookup-action key))
+             (insert! key value special-form-table)
+             (newline))
+            (else (display "This ain't it. Special form already exists in sft")
+                  (newline))))
+  )
+
+  (define (defined2? var env)
+    (define (env-loop env)
+      (define (scan vars)
+        (cond ((null? vars)
+               (env-loop (enclosing-environment env)))
+              ((equal? var (car vars))
+               #t)
+              (else (scan (cdr vars)))))
+      (if (eq? env the-empty-environment)
+          #f
+          (let ((frame (first-frame env)))
+            (scan (frame-variables frame)))))
+    (env-loop env))
+
+
+utilizing member worked for checking list of variables
+
+
+; SPECIAL FORM 'make-unbound!' removes the <symbol> binding(s) from every frame
+;              in the current environment.
+(define (make-unbound! var env)
+  (define (env-loop env)
+    (define (scan vars vals)
+      (display var)
+      (display " : ")
+      (display (car vars))
+      (display ", ")
+      (cond ((null? vars)
+             (display "LOOPED from null? vars")
+             (env-loop (enclosing-environment env)))
+            ((eq? var (car vars))
+             (display "eq? var (car vars)")
+             (set-car! vars (cdr vars))
+             (set-cdr! vals (cdr vals)))
+            (else
+             (display ", hit the else, ")
+             (scan (cdr vars) (cdr vals)))))
+    (if (eq? env the-empty-environment)
+        (error "Unbound variable -- SET! " var)
+        (let* ((frame (first-frame env))
+               (vars (frame-variables frame))
+               (vals (frame-values frame)))
+          (scan vars vals))))
+  (env-loop env))
+
+
+
+  s450==> (define x 10)
+  x
+
+  s450==> (define y 5)
+  y
+
+  s450==> (make-unbound! x)
+  x : y, , hit the else, x : x, eq? var (car vars)#<void>
+
+  > (car the-global-environment)
+  ((y (newline display / - + null? cons cdr car) newline display / - + null? cons cdr car)
+   5
+   10
+   (primitive #<procedure:newline>)
+   (primitive #<procedure:mdisplay>)
+   (primitive #<procedure:/>)
+   (primitive #<procedure:->)
+   (primitive #<procedure:+>)
+   (primitive #<procedure:null?>)
+   (primitive #<procedure:mcons>)
+   (primitive #<procedure:mcdr>)
+   (primitive #<procedure:mcar>))
+  > (caar the-global-environment)
+  (y (newline display / - + null? cons cdr car) newline display / - + null? cons cdr car)
+  >
+
+
+
+
+
+  ; SPECIAL FORM 'make-unbound!' removes the <symbol> binding(s) from every frame
+;              in the current environment.
+(define (make-unbound! var env)
+  (define (scan prev-vars prev-vals vars vals)
+    (cond ((null? vars)
+           (display "Var not found"))
+           ((eq? var (car vars))
+            (set-car! prev-vars (cdr vars))
+            (set-cdr! prev-vals (cdr vals)))
+           (else
+            (scan vars vals (cdr vars) (cdr vals)))))
+  (let* ((frame (first-frame env))
+         (vars (frame-variables frame))
+         (vals (frame-values frame)))
+    (cond ((null? vars)
+           (display "Var not found"))
+          ((eq? var (car vars))
+           (set-car! frame (cdr vars))
+           (set-cdr! frame (cdr vals)))
+          (else
+           (scan vars vals (cdr vars) (cdr vals))))))
+
+
+
+           > (car the-global-environment)
+           ((z y x newline display / - + null? cons cdr car)
+            30
+            15
+            10
+            (primitive #<procedure:newline>)
+            (primitive #<procedure:mdisplay>)
+            (primitive #<procedure:/>)
+            (primitive #<procedure:->)
+            (primitive #<procedure:+>)
+            (primitive #<procedure:null?>)
+            (primitive #<procedure:mcons>)
+            (primitive #<procedure:mcdr>)
+            (primitive #<procedure:mcar>))
+           > (caar the-global-environment)
+           (z y x newline display / - + null? cons cdr car)
+           > (s450)
+
+
+           s450==> (make-unbound! x)
+           #<void>
+
+           s450==> . . user break
+           > (caar the-global-environment)
+           (z (newline display / - + null? cons cdr car) x newline display / - + null? cons cdr car)
+           > (cdar the-global-environment)
+           (30
+            15
+            (primitive #<procedure:newline>)
+            (primitive #<procedure:mdisplay>)
+            (primitive #<procedure:/>)
+            (primitive #<procedure:->)
+            (primitive #<procedure:+>)
+            (primitive #<procedure:null?>)
+            (primitive #<procedure:mcons>)
+            (primitive #<procedure:mcdr>)
+            (primitive #<procedure:mcar>))
+           >
+
+           setting car instead of cdr
+
+           ; SPECIAL FORM 'make-unbound!' removes the <symbol> binding(s) from every frame
+;              in the current environment.
+(define (make-unbound!2 var env)
+  (define (scan prev-vars prev-vals vars vals)
+    (cond ((null? vars)
+           (display "Var not found"))
+           ((eq? var (car vars))
+            (set-cdr! prev-vars (cdr vars))
+            (set-cdr! prev-vals (cdr vals)))
+           (else
+            (scan vars vals (cdr vars) (cdr vals)))))
+  (let* ((frame (first-frame env))
+         (vars (frame-variables frame))
+         (vals (frame-values frame)))
+    (cond ((null? vars)
+           (display "Var not found"))
+          ((eq? var (car vars))
+           (set-cdr! frame (cdr vars))
+           (set-cdr! frame (cdr vals)))
+          (else
+           (scan vars vals (cdr vars) (cdr vals))))))
+
+
+           issues with test case from gradescope
+
+           s450==> (f 10 20)
+
+           is a locally defined? #t
+           is b locally defined? #t
+           unbinding a... . . mcdr: contract violation
+             expected: mpair?
+             given: ()
+           >

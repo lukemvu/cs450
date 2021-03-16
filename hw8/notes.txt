@@ -1,0 +1,112 @@
+5.8
+
+The contents of register a will be 3. Goto heads for the first instance of that label and executes from there. The second label here and its instructions are omitted so a is never assigned 4.
+
+(if (symbol? next-inst)
+     (if (not (assoc next-inst labels))
+         (receive insts                              ;; either like this
+                  (cons (make-label-entry next-inst  ;;  (it's a label)
+                                          insts)
+                        labels))
+         (error "Label already exists: " next-inst))
+     (receive (cons (make-instruction next-inst) ;; or like this
+                    insts)                       ;;  (it's an inst)
+              labels))
+
+The above worked FLAWLESSLY. Once the if statement checking the symbol? decides that the instruction is a label, I check if that label exists in the label table.
+
+5.9
+
+Need to place a check on inputs to be registers or constants, only. There exists predefined proc to check for each. Can place them right in the make-operation-exp.
+
+5.19
+started with defining local var in make new machine, list of break points
+created some procedures to set breakpoints and insert a list
+
+printed out the labels, printed out instructions, printed out break points list
+
+inserted displays to see what each instruction was printing as it was being executed
+
+some issues with cdr car the right values
+
+
+
+(define (execute)
+  (let* ((insts (get-contents pc)))
+    (cond ((null? insts)
+           'done)
+          ((assoc (car insts) breakpoint-list)
+           (display "Stopped at a breakpoint."))
+          (else
+           (instruction-execution-proc (car insts))
+           (execute)))))
+
+;; EXECUTE DEFINITION END HERE #########################################
+(define (proceed-machine)
+  (let ((insts (get-contents pc)))
+    (if (null? insts)
+        'done
+        (begin
+          ((instruction-execution-proc (car insts)))
+          (execute)))))
+
+
+
+          crasy prints infinite loop somewhere
+
+
+
+
+
+          ;; Cancel breakpoint
+(define (cancel-breakpoint label n)
+  (for-each
+   (lambda (breakpoint-pair)
+     (if (and (equal? label (cadr breakpoint-pair))
+              (equal? n (cddr breakpoint-pair)))
+         (set! breakpoint-pair #f)))
+              breakpoint-list))
+
+
+              attempted this but it failed
+
+
+
+
+              > (print-breakpoints gcd-machine)
+(((test (op =) (reg b) (const 0)) . #<procedure:...0/hw8/regsim.scm:524:10>) test-b . 1)
+((#f . #f) #f . #f)
+> (proceed-machine gcd-machine)
+. . application: not a procedure;
+ expected a procedure that can be applied to arguments
+  given: #f
+  arguments...: [none]
+>
+
+
+#|
+        ;; Cancel breakpoint
+        (define (cancel-breakpoint label n)
+          ;; Search for label n in break-point list and null out value
+          (define (cancel-break-point-helper label n bp-list)
+            (cond ((null? bp-list)
+                   (newline))
+                   ((and (equal? label (cadar bp-list))
+                        (equal? n (cddar bp-list)))
+                   ; sets label and n to false
+                   (set-car! (cdar bp-list) #f)
+                   (set-cdr! (cdar bp-list) #f)
+                   ; sets instruction pair to false
+                   (set-car! (caar bp-list) #f)
+                   ;(set-cdr! (caar bp-list) #f) ;this broke something
+                   )
+                  (else
+                   (cancel-break-point-helper label n (cdr bp-list)))))
+          (cancel-break-point-helper label n breakpoint-list))
+|#
+
+
+getting whacky values
+
+ran some tests to readd breakpoints and they weren't added properly,
+switched to proper deletion from lists similar to make unbound in hw6

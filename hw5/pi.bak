@@ -1,0 +1,96 @@
+;;; file: pi.scm
+;;;
+;;; This should be your second part of HW5.  All
+;;; these definitions are from the textbook except cons-stream.
+
+;;; cons-stream is defined (by a macro, as a special form). 
+
+(define-syntax cons-stream
+  (syntax-rules ()
+    ((_ a b) (cons a (delay b)))))
+
+(define stream-car car)
+(define (stream-cdr stream) (force (cdr stream)))
+(define stream-null? null?)
+(define the-empty-stream '())
+
+(define (stream-foreach f x)
+  (if (stream-null? x)
+      'done
+      (begin (f (stream-car x))
+             (stream-foreach f (stream-cdr x)))))
+
+(define (stream-filter pred stream)
+  (cond ((stream-null? stream) the-empty-stream)
+        ((pred (stream-car stream))
+         (cons-stream (stream-car stream)
+                      (stream-filter pred (stream-cdr stream))))
+        (else (stream-filter pred (stream-cdr stream)))))
+
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (cons-stream
+       (apply proc (map stream-car argstreams))
+       (apply stream-map
+              (cons proc (map stream-cdr argstreams))))))
+
+(define (display-n stream n)
+  (cond ((not (= 0 n))
+         (display (stream-car stream))
+         (newline)
+         (display-n (stream-cdr stream) (- n 1)))))
+
+(define (add-streams s1 s2)
+  (stream-map + s1 s2))
+
+(define (divisible? x y) (= (remainder x y) 0))
+
+(define ones (cons-stream 1 ones))
+
+(define integers (cons-stream 1 (add-streams ones integers)))
+
+(define (number->list-of-digits integer)
+  (map (lambda (x) (- (char->integer x) 48))
+       (string->list (number->string integer))))
+
+(define (list-of-digits->number list)
+  (string->number
+   (list->string
+    (map (lambda (x) (integer->char (+ x 48))) list))))
+
+(define (pow list)
+  (define (pow-iter n sum)
+    (if (= n 1)
+        1
+        (* 10 (pow-iter (- n 1) sum))))
+  (if (> (length list) 1)
+      (pow-iter (length list) 1)
+      (display "Error: list less than 2")))
+; return new-a-list
+(define (prepend-list new-a old-list-size)
+  (if (
+  
+
+;(define (mult-stream m strm)
+;  (define (mult-stream-iter m strm a a-list)
+;    (cond ((strm-null? (car strm))
+;           a-list)
+;          ((and (> (length a-list) 0)
+;                (> (pow a-list)
+                   
+            
+          
+           
+          
+    
+
+(define (consume m strm a a-list)
+  (let* ((new-a (+ (* a 10)
+                   (* m (stream-car strm))))
+         (new-a-list (if (string-length(number->string a))
+         
+         
+  
+  
+

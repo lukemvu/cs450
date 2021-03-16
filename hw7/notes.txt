@@ -1,0 +1,32 @@
+pt2
+
+Started by following the save_continuation.scm. Inserted call/cc procedure into my 450 loop and a call to target in error portions. This worked. (s450error) returne back to the s450 loop and displays an error msg with arguments that were passed that failed.
+
+test with eof button
+test with unbound variables to see if they would return
+
+test with direct (exit)  in the s450 prompt
+
+some issues with #<void> appearing, realized it was comign from user defined procedures printing object? i think. suncharn suggested editing this
+
+pt1 delayed
+
+started with some procedures delayed delayed? thunk? tuhnk-exp and thunk-env mostly from book code
+
+make thunks in the list of values area
+
+;;; Handling procedure arguments
+(define (list-of-values exps env)
+  (if (no-operands? exps)
+      '()
+      (cond ((delayed? (first-operand exps))
+             (display "inside delayed")
+             (cons (make-thunk (cdar exps) env) (list-of-values (rest-operands exps) env)))
+            (else
+             (display "reached else")
+             (cons (xeval (first-operand exps) env)
+                   (list-of-values (rest-operands exps) env))))))
+
+Some issue here, not reaching else properly.
+
+trying an installation as a special form

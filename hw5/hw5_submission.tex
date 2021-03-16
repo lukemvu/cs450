@@ -1,0 +1,167 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages and stuff
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2.5cm, right = 2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{listings}
+ 
+\setlength{\parindent}{0in}
+
+% path of graphics
+\graphicspath{ {./images/} }
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+% UPDATE FOR ASSIGNMENTS %
+\lhead{\footnotesize Homework 5}
+\rhead{\footnotesize Vu}
+\cfoot{\footnotesize \thepage}
+
+
+\begin{document}
+	\thispagestyle{empty}
+	
+	\begin{tabular}{p{15.5cm}}
+		{\large \bf Structure of Higher Level Languages} \\ CS450 \\
+		University of Massachusetts Boston \\ Fall 2020  \\ N. Haspel\\
+		\hline
+		\\
+	\end{tabular}
+
+	\vspace*{0.1cm}
+	
+	\begin{center}
+		% UPDATE FOR ASSIGNMENTS %
+		{\Large \bf Homework 5}
+		\vspace{1mm}
+		
+		{\bf November 16, 2020}
+		\vspace{1mm}
+		
+		{\bf Luke Vu}	
+	\end{center} 
+
+	\vspace*{0.5cm}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%% Document can be filled in from here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Part 1}
+\begin{enumerate}
+\item streams.scm
+\item streams.scm
+\begin{enumerate}
+\item Running it this way with the last two lines \texttt{(stream-map proc (map <??> argstream)))} is the method to do it for a single stream argument. This does not work because there may be more than one stream. The apply procedure takes in an arbitrary amount of inputs; the first points to the procedure and the remainder are lists. The single returned value lets us build on each element of the stream. Without apply, we would only be calling the procedure on a single element and not all the lists.
+\item We need the cons here to prepend the procedure to the list being passed to the apply function. The list is the argument to stream-map. It is the procedure proc and the list of streams that we get from (map stream-cdr argstreams). Its purpose is to pass the proc recursively through the procedure.
+\end{enumerate}
+\item streams.scm
+\end{enumerate}
+\newpage
+\section{Part 2}
+\begin{enumerate}
+\item 
+\begin{enumerate} 
+\item 
+\item pi.scm\\
+\\
+With building the \texttt{mult-stream} procedure, I went ahead to start some of the helper functions that were straight forward to implement: \texttt{pow}, \texttt{number-> list-of-digits}, \texttt{list-of-digits->number}. Completing the table in Figure 18 was crucial to my understanding of how the input stream was processed. The pseudo-code for \texttt{to make its length > the length of the original a-list} wasn't clear to me until I hit the step for producing the first 0 in output stream; my original attempt skipped over the zero and produced the following 1 digit to the stream. From there, implementing the function was fairly straight forward. I don't remember having any big issues with coding this section once I had a clear idea of how the algorithm worked. I tested each helper function before tying them into the primary functions. The \texttt{append-a-list} function allowed me to attach the remaining a-list to the stream at the end of the available input stream input.
+\end{enumerate}
+\item 
+\item \texttt{(pi)}\\
+My initial attempt at producing \texttt{strm} was incorrect; seeing the piazza post I realized my stream was off by (0 2 0 1). The start case for the stream was (1 6 0 3), not (1 4 0 2). This helped me better understand the LFT and matrix on page 56. I struggled with understanding what my start case for a was; I understood it needed to be a matrix but had trouble visualizing what that needed to be. I switched up and worked on the theoretical/written questions, namely 3 and 4. These aided in garnering a better understanding of LFTs and the matrix manipulation--how constants can be represented, 3 is (0 3 0 1), and for solving question 3. Question 2 helped to explain the input stream, how those composition of those elements converged towards pi. With the LFTs I figured there would need to be some kind of x value passed to them to evaluate to a digit--\texttt{eval-matrix}. This doubled as a way to get the floor of the elements of \texttt{strm} to compare.\\
+\\
+Initial run attempt I got a stream of 3 0 0 0 ... etc; I flipped the order of the matrix composition in consume. This gave me some output with 3 and followed by different integers so I was closer. I tried a couple different values for the base case of a and found the identity matrix (1 0 0 1) to work here. It effectively serves as if I have nothing in a and in the first consume step copies over that first element of strm into a.
+\\\\
+I'm not exactly sure why in my function, the order where I compose matrices is flipped vs. what is suggested in the pdf, e.g. \texttt{consume: multiply a on the right by the first element of strm and make that the new a.} Similarly, in the produce step, the matrix (10 -10n 0 1) I have it multiplying on the left.
+\\
+
+\end{enumerate}
+\section{Theoretical/Written Questions}
+\begin{enumerate}
+\item Completed Figure 18:\\
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+\lstinputlisting{fig18-complete}
+\item Do the computation on page 54 starting with 3 instead of 2 and show that they converge towards Pi. We know that the set of LFTs are closed under composition, proved in question 4 below.\\
+$$
+f_1(3) = 
+\begin{pmatrix}
+1 & 6\\
+0 & 3
+\end{pmatrix}
+\begin{pmatrix}
+0 & 3\\
+0 & 1
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 & 9\\
+0 & 3
+\end{pmatrix}
+\rightarrow 3
+$$
+$$
+f_1 \circ f_2(3) = 
+\begin{pmatrix}
+1 & 6\\
+0 & 3
+\end{pmatrix}
+\begin{pmatrix}
+2 & 10\\
+0 & 5
+\end{pmatrix}
+\begin{pmatrix}
+0 & 3\\
+0 & 1
+\end{pmatrix}
+=
+\begin{pmatrix}
+0 & 46\\
+0 & 15
+\end{pmatrix}
+\rightarrow 3.0\bar{6}
+$$
+\newpage
+\item LFT that takes $x$ as input, adds 3, then takes reciprocal.\\
+$$
+f(x) = \frac{0x + 1}{1x + 3}
+\rightarrow
+\begin{pmatrix}
+0 & 1\\
+1 & 3
+\end{pmatrix} $$
+\item The set of linear fractional transformations is closed under composition.\\
+$$f(x) = \frac{a_fx + b_f}{c_fx+d_f}$$
+$$g(x) = \frac{a_gx + b_g}{c_gx+d_g}$$
+$$ A = \begin{pmatrix}
+a_f & b_f\\
+c_f & d_f
+\end{pmatrix} $$
+$$ B = \begin{pmatrix}
+a_g & b_g\\
+c_g & d_g
+\end{pmatrix} $$
+$$ AB = \begin{pmatrix}
+a_fa_g+b_fc_g & a_fb_g+b_fd_g\\
+c_fa_g+d_fc_g & c_fb_g+d_fd_g
+\end{pmatrix} $$
+$$(f\circ g)x \rightarrow f(g(x)) = \frac{a_f \frac{a_gx + b_g}{c_gx+d_g}+ b_f}{c_f \frac{a_gx + b_g}{c_gx+d_g} + d_f}$$
+$$=\frac{\frac{a_fa_gx+a_fb_g}{c_gx+d_g}+ b_f}{\frac{c_fa_gx+c_fb_g}{c_gx+d_g}+ d_f} $$
+$$=\frac{a_fa_gx+a_fb_g+b_fc_gx+b_fd_g}{c_fa_gx+c_fb_g+d_fc_gx+d_fd_g}$$
+$$=\frac{(a_fa_g+b_fc_g)x+(a_fb_g+b_fd_g)}{(c_fa_g+d_fc_g)x + (c_fb_g+d_fd_g)}$$
+\end{enumerate}
+
+%\lstinputlisting{test.txt}
+
+%\newpage
+%\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+%\lstinputlisting[language=Python]{source_filename.py}
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+	
+\end{document}
+

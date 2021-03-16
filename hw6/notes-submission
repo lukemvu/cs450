@@ -1,0 +1,23 @@
+During initial test runs I was able to evaluate symbols and define variables. Some primitive procedures were not available, e.g. +, /. I was able to use cons, car and cdr. Looking more indepth into the code I saw the limited amount of special forms and primitive procedures installed.//
+//
+I was able to wrap some of the procedures detailed in Section 3.3.3 on look up tables to implement the install-special-form procedure. xeval was rewritten to first check the look up table for special forms, before proceeding to evaluate to one the three remaining forms, self-eval, variable, or application.//
+//
+To handle that the special form could not be installed using the name of a variable that was previously installed, my successful attempt used the member function to check if the special form name was previously defined in the variable name list of the global environment. Previous attempts included defining a function to pass the key name to check the list and running into issues with the key evaluating to its function when comparing it.//
+//
+Primitive procedures are not stored in a look up table; they are stored in the global environment. They are defined similarly to how a variable is defined. They are bound to the first frame of the global environment and their value is a tagged list, 'primitive and the primitive procedure function.//
+//
+To develop the install-primitive-procedure function, I followed the code for define-variable!.//
+//
+To ensure that the name of a special form couldn't be used for the name of a primitive procedure, I do a check for that name in the special forms table.//
+//
+To prevent a crash from entering in the name of a special form, I do a check in xeval, where if the special form is missing an argument (utilizing pair?), it prompts the display of Special form: [special-form].//
+//
+To prevent names of special forms being redefined or reassigned, in both eval-assignment and eval-definition, I add an additional check to look up the name in the special forms table.//
+//
+For defined? and locally-defined? I similarly followed the procedure from lookup-variable-value. I ran into issues with comparing the wrong values--I found myself comparing the entire expression instead of just the variable name that I was looking for. With locally-defined?, it searches its current frame and does not loop back to search its enclosing environment. I also ran into an issue that I discovered was not actually checking whether the expression I was looking up was a symbol or not.//
+//
+set-car! and set-cdr! were used to unbind variables in the make-unbound! and locally-make-unbound! procedures. Rewriting the scan helper procedure to take in four arguments, including the previous var and val lists, allowed for the unbinding of a variable by joining the two sections of the list together and skipping over the variable unbound. For a corner case of a potential variable being at the front of the list, we can remove this by changing the car and cdr of the frame itself--we set the frame's var list to be (cdr var) and the val list to be (cdr val), thus removing the binding for that variable from the frame.//
+//
+Some of my initial attempts removed the wrong variable and created additional copies of the list within the global environments variable list. I realized I had mixed up some set-car! with set-cdr! and vice versa. Running the suggested example code I got the expected value of #f for locally-defined? checks after unbinding a and b.//
+//
+My locally-make-unbound! works but I could not debug why make-unbound! doesn't pass the last two test cases. Stepping through my logic I believe I'm properly traversing down the enclosing environments to remove bindings but it doesn't seem to be working as intended.

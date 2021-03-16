@@ -1,0 +1,91 @@
+;; HW4 - part 1 and optimal BST
+
+;;; Answer part 1 here.
+
+
+;; Part 2 starts here! 
+;; read-file produces a list whose elements are the expressions in the file.
+  (define (read-file)
+    (let ((expr (read)))
+      (if (eof-object? expr)
+          '()
+          (cons expr (read-file)))))
+
+  (define data (with-input-from-file "keys.dat" read-file))
+
+ (define (entry tree) (car tree))
+ (define (key entry) (car entry))
+ (define (freq entry) (cadr entry))
+ (define (left-branch tree) (cadr tree)) 
+ (define (right-branch tree) (caddr tree)) 
+
+
+ (define (make-tree entry left right) 
+   (list entry left right)) 
+  
+ (define (adjoin-set x set) 
+   (cond ((null? set) (make-tree x '() '()))
+         (else
+          (let ((rkey (car (entry set))))
+            (cond ((= (car x) rkey) set) 
+                  ((< (car x) rkey)
+                   (make-tree (entry set) 
+                              (adjoin-set x (left-branch set)) 
+                              (right-branch set))) 
+                  ((> (car x) rkey) 
+                   (make-tree (entry set) 
+                              (left-branch set) 
+                              (adjoin-set x (right-branch set))))))))) 
+ ;; A skeleton for BST. You may add things here 
+ (define (make-table) 
+   (let ((local-table '())) 
+      
+     (define (lookup key records) 
+       (if (null? records) #f
+           (let ((rkey (car (entry records))))
+             (cond ((= key rkey) (entry records)) 
+                   ((< key rkey) (lookup key (left-branch records))) 
+                   ((> key rkey) (lookup key (right-branch records))))))) 
+      
+     (define (insert! dat)
+       (let ((rkey (car dat)))
+         (let ((record (lookup rkey local-table))) 
+           (if record 
+               (set-cdr! record (freq dat)) 
+               (set! local-table (adjoin-set dat local-table)))))) 
+      
+     (define (get key) 
+       (lookup key local-table))
+     
+     ;build table from data. Data is a list of (key freq)
+     (define (build-tree-from-data the-keys)
+       (if (null? the-keys) 'ok
+        (begin (insert! (car the-keys))
+             (build-tree-from-data (cdr the-keys)))))
+     
+     (define (dispatch m) 
+       (cond ((eq? m 'get-proc) get) 
+             ((eq? m 'insert-proc) insert!)
+             ((eq? m 'build-proc) build-tree-from-data)
+             ((eq? m 'print) local-table) 
+             (else (error "Undefined operation -- TABLE" m)))) 
+     dispatch)) 
+  
+ (define table (make-table)) 
+ (define get (table 'get-proc)) 
+ (define put (table 'insert-proc))
+ (define cost (table 'cost-proc))
+
+;;; Put your naive and DP procedures here.
+
+;;;; the following procedure is handy for timing things
+(#%require (only racket/base current-milliseconds))
+(define (runtime) (current-milliseconds))
+
+(define (timed f . args)
+  (let ((init (runtime)))
+    (let ((v (apply f args)))
+      (display (list 'time: (- (runtime) init)))
+      (newline)
+      v)))
+

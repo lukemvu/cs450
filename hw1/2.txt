@@ -1,0 +1,5 @@
+(define (p r e)
+(cond ((= r 0) 1)
+      ((or (= e 0) (= e r)) 1)
+      (else (+ (p (- r 1)  e)
+               (p (- r 1) (- e 1))))))

@@ -1,0 +1,30 @@
+Streams
+
+Iterators, but with list syntax: lazy-computation
+
+Iterators: __next__
+Streams: stream-cdr
+
+(cons-stream 1 (cons-stream 2 the-empty-stream))
+
+cons-stream -- making streams
+stream-car -- getting the first of a stream
+stream-cdr -- getting the rest of a stream
+the-empty-stream -- the empty stream value
+
+cons-stream is a SPECIAL FORM: isn't evaluated with the traditional evaluation rules
+
+(cons-stream 1 (cons-stream 2 the-empty-stream))
+
+s = (1. #promise)
+#promise = (cons-stream 2 the-empty-stream)
+
+streams are MEMOIZED
+One a stream calculates its rest, it won't recalculate it
+It will store the value of evaluating the rest
+
+Take-aways:
+Streams are like more elegant iterators: list syntax
+Cons-stream is a special form
+Rest is evaluated once, never has to be recalculated again -- Memoization
+ -- forced vs not forced

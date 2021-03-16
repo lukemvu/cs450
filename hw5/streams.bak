@@ -1,0 +1,4 @@
+(define-syntax con-stream
+  (syntax-rules ()
+    ((cons-stream head tail)
+     (cons head (delay tail)))))

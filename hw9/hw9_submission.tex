@@ -1,0 +1,112 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages and stuff
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2.5cm, right = 2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\setlength{\parindent}{0in}
+
+% path of graphics
+\graphicspath{ {./images/} }
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+% UPDATE FOR ASSIGNMENTS %
+\lhead{\footnotesize Homework 9}
+\rhead{\footnotesize Vu}
+\cfoot{\footnotesize \thepage}
+
+
+\begin{document}
+	\thispagestyle{empty}
+
+	\begin{tabular}{p{15.5cm}}
+		{\large \bf Structure of Higher Level Languages} \\ CS450 \\
+		University of Massachusetts Boston \\ Fall 2020  \\ N. Haspel\\
+		\hline
+		\\
+	\end{tabular}
+
+	\vspace*{0.1cm}
+
+	\begin{center}
+		% UPDATE FOR ASSIGNMENTS %
+		{\Large \bf Homework 9}
+		\vspace{1mm}
+
+		{\bf December 23, 2020}
+		\vspace{1mm}
+
+		{\bf Luke Vu}
+	\end{center}
+
+	\vspace*{0.5cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document can be filled in from here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{install-special-form}
+\section{Exercise 5.24}
+I added test and branch in eval-dispatch in eceval.scm and
+added cond? from syntax.scm in eceval-operations in eceval.scm.
+I'm thinking cond can be implemented similarly to if and begin implementations. If the conditional passes, execute the following sequence of expressions. If the condition doesn't pass then test the following conditional. If no conditionals pass and if else is reached then execute that sequence of expressions.
+
+
+\section{Exercise 5.26}
+\begin{enumerate}[label=\alph*]
+\item The maximum-depth of the stack is 10.
+\item $f(n)$ is the total number of push operations used in evaluating $n!$ for $n\geq 1$. $$f(n) = 35n + 29$$
+Equation was linear of the form $y=mx + b$, $m$ was the difference between two sequential values of $n$. $b$ was found plugging in $y, m, x$.
+\end{enumerate}
+
+
+\section{Exercise 5.27}
+\begin{center}
+\includegraphics[width=14cm]{table.png}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ c | c | c }
+  & Maximum depth & Number of pushes \\
+	\hline
+	\hline
+ Recursive factorial & $f(n) = 5n + 3$ & $f(n) = 32n-16$ \\
+ \hline
+ Iterative factorial & 10 & $f(n) = 35n + 29$
+\end{tabular}
+\end{center}
+
+
+\section{Exercise 5.28}
+After implementing code for non-tail recursion:
+\begin{center}
+\includegraphics[width=14cm]{table2.png}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ c | c | c }
+  & Maximum depth & Number of pushes \\
+	\hline
+	\hline
+ Recursive factorial & $f(n) = 8n + 3$ & $f(n) = 34n-16$ \\
+ \hline
+ Iterative factorial & $f(n) = 3n + 14$ & $f(n) = 37n + 33$
+\end{tabular}
+\end{center}
+
+%\lstinputlisting{test.txt}
+
+%\newpage
+%\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+%\lstinputlisting[language=Python]{source_filename.py}
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+
+\end{document}

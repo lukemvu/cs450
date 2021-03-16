@@ -1,0 +1,133 @@
+Programming Questions:
+1.
+
+
+
+Written Exercises:
+
+1.
+> (solve-ax+by=1 233987973 41111687)
+(-11827825 . 67318298)
+
+2.
+(define exercise-key1 (generate-RSA-key-pair))
+(define exercise-key2 (generate-RSA-key-pair))
+
+> exercise-key1
+((486953671 . 195246989) 486953671 . 351956933)
+> exercise-key2
+((589985171 . 80376277) 589985171 . 267956413)
+
+3.
+> (authenticate-and-decrypt (signed-message received-mystery-message received-mystery-signature) nancy-pelosi-public-key joe-biden-private-key)
+This is no good.
+> (authenticate-and-decrypt (signed-message received-mystery-message received-mystery-signature) aoc-public-key joe-biden-private-key)
+This is no good.
+> (authenticate-and-decrypt (signed-message received-mystery-message received-mystery-signature) michael-cohen-public-key joe-biden-private-key)
+This is no good.
+> (authenticate-and-decrypt (signed-message received-mystery-message received-mystery-signature) ivanka-trump-public-key joe-biden-private-key)
+This is no good.
+> (authenticate-and-decrypt (signed-message received-mystery-message received-mystery-signature) bernie-sanders-public-key joe-biden-private-key)
+This is no good.
+> (authenticate-and-decrypt (signed-message received-mystery-message received-mystery-signature) kamala-harris-public-key joe-biden-private-key)
+"Put your mask on! There is a deadly pandemic outside.   "
+
+The sender was Kamala Harris and the message was: "Put your mask on! There is a deadly pandemic outside.   "
+
+We have the encrypted message and the accompanying encrypted signature as well as Biden's private key. The authenticate and decrypt function takes as inputs a signed message, the sender's public key, and the recipient's private key. By calling on this function and trying out different sender's public keys, the correct would not throw a key mismatch error message and properly decrypt the sent message.
+
+ran into errors with parenthesis
+
+4.
+> (define trump-to-pence (encrypt-and-sign "Hey Mike, can you pass the salt" (crack-rsa donald-trump-public-key) mike-pence-public-key))
+> (authenticate-and-decrypt trump-to-pence donald-trump-public-key (crack-rsa mike-pence-public-key))
+"Hey Mike, can you pass the salt "
+
+> (define biden-to-harris (encrypt-and-sign "Hey Harris, where in the world is Carmen Sandiego anyway?" (crack-rsa joe-biden-public-key) aoc-public-key))
+> (authenticate-and-decrypt biden-to-harris joe-biden-public-key (crack-rsa aoc-public-key))
+"Hey Harris, where in the world is Carmen Sandiego anyway?   "
+
+> (define ivanka-to-trump (encrypt-and-sign "Hey dad, can I get another small loan of one million dollars?" (crack-rsa ivanka-trump-public-key) donald-trump-public-key))
+> (authenticate-and-decrypt ivanka-to-trump ivanka-trump-public-key (crack-rsa donald-trump-public-key))
+"Hey dad, can I get another small loan of one million dollars?   "
+
+5.
+
+> (timed smallest-divisor 2)
+(time: 0)
+2
+> (timed smallest-divisor 79)
+(time: 0)
+79
+> (timed smallest-divisor 211)
+(time: 0)
+211
+> (timed smallest-divisor 1009)
+(time: 0)
+1009
+> (timed smallest-divisor 16349)
+(time: 0)
+16349
+> (timed smallest-divisor 836351)
+(time: 0)
+836351
+> (timed smallest-divisor 4424111)
+(time: 0)
+4424111
+> (timed smallest-divisor 95998129)
+(time: 1)
+95998129
+> (timed smallest-divisor 525592729)
+(time: 1)
+525592729
+> (timed smallest-divisor 9555839257)
+(time: 5)
+9555839257
+> (timed smallest-divisor 63746049373)
+(time: 12)
+63746049373
+> (timed smallest-divisor 988704463573)
+(time: 56)
+988704463573
+> (timed smallest-divisor 3008703869131)
+(time: 87)
+3008703869131
+> (timed smallest-divisor 78929090843137)
+(time: 449)
+78929090843137
+> (timed smallest-divisor 219722081706689)
+(time: 782)
+219722081706689
+> (timed smallest-divisor 9581766736029373)
+(time: 5098)
+9581766736029373
+> (timed smallest-divisor 94151230938875233)
+(time: 15416)
+94151230938875233
+> (timed smallest-divisor 638334464113901957)
+(time: 40138)
+638334464113901957
+> (timed smallest-divisor 3484023338170153301)
+(time: 96074)
+3484023338170153301
+
+20
+
+21
+546115153876629387277
+
+y = -1801.58 - (-0.00659397/-0.8613193)*(1 - e^(+0.8613193*x))
+
+3.86628... × 10^16 ms
+years:
+
+1.95256×10^35 ms
+years:
+
+y = 8.981561000000001e-17*(x)^16.44573
+
+7.83707... × 10^11
+24.85 years
+
+6.99539 × 10^16
+2.216 million years

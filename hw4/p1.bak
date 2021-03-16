@@ -1,0 +1,38 @@
+; Original Code
+(define (make-account balance)
+  (define (withdraw amount)
+    ( if (>= balance amount)
+         (begin (set! balance (- balance amount))
+                balance)
+         "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch m)
+    (cond ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else ((print "Unknown request -- MAKE-ACCOUNT"
+                       m)))))
+  dispatch)
+
+; QUESTION 1A
+(define make-account-lambda
+  (lambda (x)
+    (define withdraw
+      (lambda (y)
+        (if (>= x y)
+            (begin (set! x (- x y))
+                   x)
+            "Insufficient funds")))
+    (define deposit
+      (lambda (y)
+        (set! x (+ x y))
+        x))
+    (define dispatch
+      (lambda (y)
+        (cond ((eq? y 'withdraw) withdraw)
+              ((eq? y 'deposit) deposit)
+              (else ((print "Unknown request -- MAKE-ACCOUNT"
+                       y))))))
+    dispatch))
+                       

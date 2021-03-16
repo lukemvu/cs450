@@ -1,0 +1,5 @@
+part 1 question 2a 2b
+
+Running it this way with the last two lines is the way to do it for a single stream argument. This does not work because there is more than 1 stream. The apply procedure calls its input procedure on all the elements of its input list and returns a single value back. This single returned value lets us build on each element of the stream. Without apply, we would only be calling the procedure on a single element and not all the lists.
+
+We need the cons here to create a pair. This pair is the argument to stream-map. The pair is the procedure proc and the list of streams that we get from (map stream-cdr argstreams). Cons purpose to pass the proc recursively through the procedure.

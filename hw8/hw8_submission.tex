@@ -1,0 +1,92 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages and stuff
+\usepackage[top = 2.5cm, bottom = 2.5cm, left = 2.5cm, right = 2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{listings}
+
+\setlength{\parindent}{0in}
+
+% path of graphics
+\graphicspath{ {./images/} }
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+% UPDATE FOR ASSIGNMENTS %
+\lhead{\footnotesize Homework 8}
+\rhead{\footnotesize Vu}
+\cfoot{\footnotesize \thepage}
+
+
+\begin{document}
+	\thispagestyle{empty}
+
+	\begin{tabular}{p{15.5cm}}
+		{\large \bf Structure of Higher Level Languages} \\ CS450 \\
+		University of Massachusetts Boston \\ Fall 2020  \\ N. Haspel\\
+		\hline
+		\\
+	\end{tabular}
+
+	\vspace*{0.1cm}
+
+	\begin{center}
+		% UPDATE FOR ASSIGNMENTS %
+		{\Large \bf Homework 8}
+		\vspace{1mm}
+
+		{\bf December 14, 2020}
+		\vspace{1mm}
+
+		{\bf Luke Vu}
+	\end{center}
+
+	\vspace*{0.5cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Document can be filled in from here %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Notes}
+
+
+\subsection{Exercise 5.8}
+The contents of register \texttt{a} will be 3. \texttt{goto} heads for the first instance of that label and executes from there. The second instance of the label and its associated instructions are omitted so \texttt{a} is never assigned 4.\\
+\\
+This was solved with a simple modification of adding an \texttt{if} and \texttt{assoc} to check for whether the label was previously inserted into the labels table.
+
+
+\subsection{Exercise 5.9}
+This problem was a simple modification of the \texttt{make-operation-exp} function to add a check for whether the expression was a register or constant.
+
+
+\subsection{Exercise 5.19}
+I started with defining some new local variables in \texttt{make-new-machine}. \texttt{labels} and \texttt{breakpoint-list} were added. I created some functions to display the breakpoints list, instruction sequence, and labels. This helped to clear up confusion I had about how instructions were stored in the machine.\\
+\\
+I figured that \texttt{execute} could be modified to check each instruction with the breakpoints list before it is executed to decide whether to break out of its loop or not. \texttt{proceed-machine} would essentially be the original \texttt{execute} function. This would allow the machine to proceed with the instruction then return to our modified \texttt{execute} function with the breakpoint check.\\
+\\
+By storing the instruction-pair (text of instruction and the procedure itself) from the instruction sequence into the breakpoint list, I can easily do a check with whatever the current instruction is in \texttt{pc}.\\
+\\
+\newpage
+I had some issues with lookup that threw me in infinite loops that I figured were just due to accessing the wrong parts of the lists or having the breakpoint list set up improperly.\\
+\\
+With \texttt{set-breakpoint}, my final approach defined two internal functions. \texttt{find-label} helped to navigate to the correct label and its associated instructions. \texttt{find-instruction} navigated this list of instructions to find the instruction with the correct offset. I stored this pair along with another pair that included the label and offset. This order let me use \texttt{assoc} in the breakpoint comparison in \texttt{execute} to easily check whether the instruction was in the breakpoint list or not. Issues I ran into implementing this was just properly navigating the \texttt{car} and \texttt{cdr} of my lists and pairs.\\
+\\
+\texttt{cancel-all-breakpoints} was simple to implement. I just set the breakpoint list to be the empty list as it was initialized.\\
+\\
+Initially with \texttt{cancel-breakpoint} I tried a \texttt{for-each} and lambda expression to just set values in the breakpoint list to something else so they wouldn't match when \texttt{execute} checks the breakpoint list. My second attempt iterated through the breakpoint list and set each of the values in each breakpoint list entry to false on the same idea above. This partially worked and passed test cases but I realized that on adding back breakpoints and printing out the list again gave some incorrect results. My final approach I decided to properly remove the breakpoint elements from the breakpoint list similarly to \texttt{make-unbound!} was done in homework 6. This worked as expected and I was able to add and remove breakpoints cleanly.
+
+
+%\lstinputlisting{test.txt}
+
+%\newpage
+%\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
+%\lstinputlisting[language=Python]{source_filename.py}
+% https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+
+\end{document}
